@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import CategoryChips from "@/components/CategoryChips"
 import AppCard from "@/components/AppCard"
 import AdBanner from "@/components/AdBanner"
-import { apps } from "@/data/apps"
+import { connectDB } from "@/lib/connectDB"
+import App from "@/models/App"
 import { TrendingUp, Clock, Download } from "lucide-react"
 
 export const metadata: Metadata = {
@@ -10,10 +11,12 @@ export const metadata: Metadata = {
   description: "Download trending mobile apps and games. Get premium apps for free with our secure download system.",
 }
 
-export default function HomePage() {
-  const trendingApps = apps.filter((app) => app.trending).slice(0, 6)
-  const recentApps = apps.slice(0, 8)
-  const topDownloads = apps
+export default async function HomePage() {
+  await connectDB()
+  const allApps = await App.find().lean()
+  const trendingApps = allApps.filter((app) => app.trending).slice(0, 6)
+  const recentApps = allApps.slice(0, 8)
+  const topDownloads = allApps
     .sort(
       (a, b) => Number.parseInt(b.downloads.replace(/[^\d]/g, "")) - Number.parseInt(a.downloads.replace(/[^\d]/g, "")),
     )
@@ -49,7 +52,16 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {trendingApps.map((app) => (
-            <AppCard key={app.id} app={app} />
+            <AppCard key={app._id.toString()} app={{
+              id: app._id.toString(),
+              title: app.title,
+              icon: app.icon,
+              category: app.category,
+              rating: app.rating,
+              downloads: app.downloads,
+              size: app.size,
+              description: app.description
+            }} />
           ))}
         </div>
       </section>
@@ -62,7 +74,16 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {topDownloads.map((app) => (
-            <AppCard key={app.id} app={app} />
+            <AppCard key={app._id.toString()} app={{
+              id: app._id.toString(),
+              title: app.title,
+              icon: app.icon,
+              category: app.category,
+              rating: app.rating,
+              downloads: app.downloads,
+              size: app.size,
+              description: app.description
+            }} />
           ))}
         </div>
       </section>
@@ -75,7 +96,16 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {recentApps.map((app) => (
-            <AppCard key={app.id} app={app} />
+            <AppCard key={app._id.toString()} app={{
+              id: app._id.toString(),
+              title: app.title,
+              icon: app.icon,
+              category: app.category,
+              rating: app.rating,
+              downloads: app.downloads,
+              size: app.size,
+              description: app.description
+            }} />
           ))}
         </div>
       </section>

@@ -90,24 +90,24 @@ export default function ContentLocker({ downloadUrl, appTitle, children }: Conte
         {isLoading ? (
           <>
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-            <span>Unlocking...</span>
+            <span>Downloading...</span>
           </>
         ) : (
           <>
-            <Lock className="w-5 h-5" />
-            <span>Unlock Download</span>
+            <Download className="w-5 h-5" />
+            <span>Download Now</span>
           </>
         )}
       </button>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+      {/* <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
         <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">How to download:</h4>
         <ol className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
           <li>1. Click "Unlock Download" button</li>
           <li>2. Complete one quick offer</li>
           <li>3. Your download will be ready instantly</li>
         </ol>
-      </div>
+      </div> */}
     </div>
   )
 }

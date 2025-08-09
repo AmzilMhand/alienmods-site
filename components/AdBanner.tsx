@@ -16,17 +16,17 @@ export default function AdBanner({ slot = "default", className = "" }: AdBannerP
     script.type = "text/javascript"
     script.innerHTML = `
       atOptions = {
-        'key' : 'your-adsterra-key-here',
+        'key' : 'a8d0ae92e92f7047c257074e3baf076e',
         'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
+        'height' : 90,
+        'width' : 728,
         'params' : {}
       };
     `
 
     const script2 = document.createElement("script")
     script2.type = "text/javascript"
-    script2.src = "//www.topcreativeformat.com/your-adsterra-key-here/invoke.js"
+    script2.src = "//www.highperformanceformat.com/a8d0ae92e92f7047c257074e3baf076e/invoke.js"
 
     if (adRef.current) {
       adRef.current.appendChild(script)
@@ -39,14 +39,10 @@ export default function AdBanner({ slot = "default", className = "" }: AdBannerP
   }, [])
 
   return (
-    <div className={`flex justify-center items-center bg-gray-100 dark:bg-gray-800 rounded-lg ${className}`}>
-      <div ref={adRef} className="min-h-[250px] flex items-center justify-center">
+    <div className={`flex justify-center items-center  rounded-lg `}>
+      <div ref={adRef} className="min-h-[90px] w-full max-w-[728px] flex items-center justify-center ">
         {/* Fallback content */}
-        <div className="text-center text-gray-500 dark:text-gray-400">
-          <div className="w-64 h-32 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-            <span className="text-sm">Advertisement</span>
-          </div>
-        </div>
+        
       </div>
     </div>
   )

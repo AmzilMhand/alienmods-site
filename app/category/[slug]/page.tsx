@@ -3,7 +3,8 @@ import { notFound } from "next/navigation"
 import AppCard from "@/components/AppCard"
 import CategoryChips from "@/components/CategoryChips"
 import AdBanner from "@/components/AdBanner"
-import { apps } from "@/data/apps"
+import { connectDB } from "@/lib/connectDB"
+import App from "@/models/App"
 
 interface CategoryPageProps {
   params: {
@@ -71,7 +72,16 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       {/* Apps Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categoryApps.map((app) => (
-          <AppCard key={app.id} app={app} />
+          <AppCard key={app._id} app={{
+            id: app._id.toString(),
+            title: app.title,
+            icon: app.icon,
+            category: app.category,
+            rating: app.rating,
+            downloads: app.downloads,
+            size: app.size,
+            description: app.description
+          }} />
         ))}
       </div>
 

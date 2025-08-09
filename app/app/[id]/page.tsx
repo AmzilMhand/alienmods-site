@@ -2,9 +2,12 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { Star, Download, Shield, Smartphone, Calendar, Users } from "lucide-react"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import ContentLocker from "@/components/ContentLocker"
 import AdBanner from "@/components/AdBanner"
-import { apps } from "@/data/apps"
+import { connectDB } from "@/lib/connectDB"
+import App from "@/models/App"
+import mongoose from "mongoose"
 
 interface AppPageProps {
   params: {
@@ -13,7 +16,15 @@ interface AppPageProps {
 }
 
 export async function generateMetadata({ params }: AppPageProps): Promise<Metadata> {
-  const app = apps.find((a) => a.id === params.id)
+  // Validate ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    return {
+      title: "App Not Found - AlienMods",
+    }
+  }
+
+  await connectDB()
+  const app = await App.findById(params.id).lean()
 
   if (!app) {
     return {
@@ -29,13 +40,21 @@ export async function generateMetadata({ params }: AppPageProps): Promise<Metada
 }
 
 export async function generateStaticParams() {
+  await connectDB()
+  const apps = await App.find({}).lean()
   return apps.map((app) => ({
-    id: app.id,
+    id: app._id.toString(),
   }))
 }
 
-export default function AppPage({ params }: AppPageProps) {
-  const app = apps.find((a) => a.id === params.id)
+export default async function AppPage({ params }: AppPageProps) {
+  // Validate ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    notFound()
+  }
+
+  await connectDB()
+  const app = await App.findById(params.id).lean()
 
   if (!app) {
     notFound()
@@ -45,7 +64,7 @@ export default function AppPage({ params }: AppPageProps) {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* App Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+        <div className="flex flex-row items-start space-y-4 space-x-4 sm:space-x-6 mb-4">
           <Image
             src={app.icon || "/placeholder.svg"}
             alt={app.title}
@@ -56,42 +75,46 @@ export default function AppPage({ params }: AppPageProps) {
           <div className="flex-1">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{app.title}</h1>
             <p className="text-blue-600 dark:text-blue-400 font-medium mb-3">{app.category}</p>
+            <div className="hidden sm:flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <div className="flex items-center space-x-1">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span className="font-medium">{app.rating}</span>
+            <span>({app.reviews} reviews)</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Smartphone className="w-4 h-4" />
+            <span>{app.size}</span>
 
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="font-medium">{app.rating}</span>
-                <span>({app.reviews} reviews)</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Download className="w-4 h-4" />
-                <span>{app.downloads}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Smartphone className="w-4 h-4" />
-                <span>{app.size}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                <Shield className="w-3 h-3 mr-1" />
-                Verified Safe
-              </span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                <Calendar className="w-3 h-3 mr-1" />
-                Updated {app.lastUpdated}
-              </span>
-            </div>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Download className="w-4 h-4" />
+            <span>{app.downloads}</span>
           </div>
         </div>
+          </div>
+          </div>
+        <div className="flex sm:hidden justify-between items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <div className="flex items-center space-x-1">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span className="font-medium">{app.rating}</span>
+            <span>({app.reviews} reviews)</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Smartphone className="w-4 h-4" />
+            <span>{app.size}</span>
+
+          </div>
+          <div className="flex items-center space-x-1">
+            <Download className="w-4 h-4" />
+            <span>{app.downloads}</span>
+          </div>
+        </div>
+      {/* Download Section */}
+        <ContentLocker downloadUrl={app.downloadUrl} appTitle={app.title} />
+
       </div>
 
-      {/* Download Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Download</h2>
-        <ContentLocker downloadUrl={app.downloadUrl} appTitle={app.title} />
-      </div>
+
 
       {/* Ad Banner */}
       <div className="mb-6">
@@ -101,18 +124,35 @@ export default function AppPage({ params }: AppPageProps) {
       {/* Screenshots */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Screenshots</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {app.screenshots.map((screenshot, index) => (
+        <Carousel
+  opts={{
+    align: "start",
+    loop: false,
+  }}
+  className="w-full"
+>
+  <CarouselContent className="-ml-2 md:-ml-4">
+    {app.screenshots.map((screenshot, index) => (
+      <CarouselItem key={index} className="pl-2 md:pl-4 basis-auto">
+        <div className="p-1">
+          {/* Fixed height, width adjusts automatically */}
+          <div className="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-black h-80 md:h-96">
             <Image
-              key={index}
               src={screenshot || "/placeholder.svg"}
               alt={`${app.title} screenshot ${index + 1}`}
-              width={200}
-              height={400}
-              className="rounded-lg border border-gray-200 dark:border-gray-700"
+              width={300} // just a placeholder for Next.js (keeps aspect ratio)
+              height={600}
+              className="h-full w-auto object-contain"
             />
-          ))}
+          </div>
         </div>
+      </CarouselItem>
+    ))}
+  </CarouselContent>
+  <CarouselPrevious />
+  <CarouselNext />
+</Carousel>
+
       </div>
 
       {/* Description */}
@@ -173,9 +213,8 @@ export default function AppPage({ params }: AppPageProps) {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-3 h-3 ${
-                            i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300 dark:text-gray-600"
-                          }`}
+                          className={`w-3 h-3 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300 dark:text-gray-600"
+                            }`}
                         />
                       ))}
                     </div>
@@ -185,10 +224,10 @@ export default function AppPage({ params }: AppPageProps) {
               </div>
             </div>
           )) || (
-            <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-              No reviews yet. Be the first to review this app!
-            </p>
-          )}
+              <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                No reviews yet. Be the first to review this app!
+              </p>
+            )}
         </div>
       </div>
     </div>
