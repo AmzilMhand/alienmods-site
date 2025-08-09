@@ -8,7 +8,7 @@ const UserReviewSchema = new mongoose.Schema({
 })
 
 const AppSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: true, unique: true },
   icon: { type: String, required: true },
   category: { type: String, required: true },
   rating: { type: Number, required: true, min: 0, max: 5 },
@@ -23,7 +23,17 @@ const AppSchema = new mongoose.Schema({
   screenshots: [{ type: String }],
   downloadUrl: { type: String, required: true },
   trending: { type: Boolean, default: false },
-  userReviews: [UserReviewSchema]
-}, { timestamps: true })
+  userReviews: [UserReviewSchema],
+  features: [{ type: String }],
+  modFeatures: [{ type: String }]
+}, { 
+  timestamps: true,
+  versionKey: false,
+  id: false,
+  collection: 'apps'
+})
+
+// Remove any existing indexes and only keep the title index
+AppSchema.index({ title: 1 }, { unique: true })
 
 export default mongoose.models.App || mongoose.model('App', AppSchema)

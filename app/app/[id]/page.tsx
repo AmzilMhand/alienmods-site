@@ -16,15 +16,11 @@ interface AppPageProps {
 }
 
 export async function generateMetadata({ params }: AppPageProps): Promise<Metadata> {
-  // Validate ObjectId format
-  if (!mongoose.Types.ObjectId.isValid(params.id)) {
-    return {
-      title: "App Not Found - AlienMods",
-    }
-  }
-
-  await connectDB()
-  const app = await App.findById(params.id).lean()
+   await connectDB()
+  const apps = await App.find({}).lean()
+  const app = apps.find(app => 
+    app.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") === params.id
+  )
 
   if (!app) {
     return {
@@ -39,6 +35,7 @@ export async function generateMetadata({ params }: AppPageProps): Promise<Metada
   }
 }
 
+
 export async function generateStaticParams() {
   await connectDB()
   const apps = await App.find({}).lean()
@@ -48,13 +45,11 @@ export async function generateStaticParams() {
 }
 
 export default async function AppPage({ params }: AppPageProps) {
-  // Validate ObjectId format
-  if (!mongoose.Types.ObjectId.isValid(params.id)) {
-    notFound()
-  }
-
   await connectDB()
-  const app = await App.findById(params.id).lean()
+  const apps = await App.find({}).lean()
+  const app = apps.find(app => 
+    app.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") === params.id
+  )
 
   if (!app) {
     notFound()
@@ -118,7 +113,8 @@ export default async function AppPage({ params }: AppPageProps) {
 
       {/* Ad Banner */}
       <div className="mb-6">
-        <AdBanner className="h-40" />
+        <AdBanner type="banner" />
+        <AdBanner type="social" />
       </div>
 
       {/* Screenshots */}
@@ -187,7 +183,7 @@ export default async function AppPage({ params }: AppPageProps) {
       </div>
 
       {/* Reviews */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      {/* <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Reviews</h2>
           <div className="flex items-center space-x-2">
@@ -229,7 +225,7 @@ export default async function AppPage({ params }: AppPageProps) {
               </p>
             )}
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

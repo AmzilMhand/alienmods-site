@@ -1,15 +1,22 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { SearchIcon, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { apps } from "@/data/apps"
+
+interface SearchResult {
+  id: string
+  title: string
+  icon: string
+  category: string
+  rating: number
+}
 
 export default function SearchComponent() {
   const [query, setQuery] = useState("")
-  const [results, setResults] = useState<any[]>([])
+  const [results, setResults] = useState<SearchResult[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
 
@@ -25,21 +32,40 @@ export default function SearchComponent() {
   }, [])
 
   useEffect(() => {
-    if (query.length > 0) {
-      const filtered = apps
-        .filter(
-          (app) =>
-            app.title.toLowerCase().includes(query.toLowerCase()) ||
-            app.category.toLowerCase().includes(query.toLowerCase()) ||
-            app.description.toLowerCase().includes(query.toLowerCase()),
-        )
-        .slice(0, 5)
-      setResults(filtered)
-      setIsOpen(true)
-    } else {
+    if (query.trim() === "") {
       setResults([])
       setIsOpen(false)
+      return
     }
+
+    const searchApps = async () => {
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+        const data = await response.json()
+
+        if (data.success) {
+          const mappedResults = data.apps.map((app: any) => ({
+            id: app.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+            title: app.title,
+            icon: app.icon,
+            category: app.category,
+            rating: app.rating
+          }))
+          setResults(mappedResults)
+          setIsOpen(true)
+        } else {
+          setResults([])
+          setIsOpen(false)
+        }
+      } catch (error) {
+        console.error('Search error:', error)
+        setResults([])
+        setIsOpen(false)
+      }
+    }
+
+    const debounceTimer = setTimeout(searchApps, 300)
+    return () => clearTimeout(debounceTimer)
   }, [query])
 
   return (

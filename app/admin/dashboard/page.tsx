@@ -11,8 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Plus, Edit, Trash2, Upload, Link, Image } from "lucide-react"
+import { Plus, Edit, Trash2, Upload, Image } from "lucide-react"
+import Link from "next/link"
 
+ 
 interface App {
   _id?: string
   title: string
@@ -194,12 +196,19 @@ export default function AdminDashboard() {
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <Link href="/admin/ai-generator">
+               <Button >
+              <Plus className="w-4 h-4 mr-2" />
+              Add New App
+            </Button>
+            </Link>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm}>
               <Plus className="w-4 h-4 mr-2" />
               Add New App
             </Button>
+            
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>

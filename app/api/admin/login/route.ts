@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import Admin from '@/models/Admin'
@@ -8,15 +7,38 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB()
     
-    const { username, password } = await request.json()
+    const body = await request.json()
+    const { username, password } = body
+    
+    console.log('Login attempt for username:', username)
     
     if (!username || !password) {
+      console.log('Missing credentials:', { username: !!username, password: !!password })
       return NextResponse.json({ error: 'Username and password are required' }, { status: 400 })
     }
 
-    const admin = await Admin.findOne({ username, isActive: true })
+    const admin = await Admin.findOne({ username })  // Remove isActive filter temporarily
+    console.log('Full admin document:', {
+      found: !!admin,
+      username: admin?.username,
+      isActive: admin?.isActive,
+      _id: admin?._id,
+    })
+
+    console.log('Debug login:', {
+      adminExists: !!admin,
+      providedPassword: password,
+      storedHash: admin?.password,
+    })
     
-    if (!admin || !(await admin.comparePassword(password))) {
+    if (!admin) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
+
+    const isValidPassword = await admin.comparePassword(password)
+    console.log('Password valid:', isValidPassword)
+    
+    if (!isValidPassword) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
 
@@ -42,9 +64,15 @@ export async function POST(request: NextRequest) {
       maxAge: 7 * 24 * 60 * 60 // 7 days
     })
 
+    console.log('Login successful for:', username)
     return response
-  } catch (error) {
-    console.error('Login error:', error)
+
+  } catch (error: any) {
+    console.error('Login error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

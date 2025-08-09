@@ -14,8 +14,12 @@ export const metadata: Metadata = {
     "Download the latest premium mobile apps and games for free. Trending apps, modded games, and exclusive content.",
   keywords: "mobile apps, android games, premium apps, modded games, free download",
   authors: [{ name: "AlienMods" }],
-  viewport: "width=device-width, initial-scale=1",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({

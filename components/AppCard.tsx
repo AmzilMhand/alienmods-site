@@ -18,7 +18,7 @@ interface AppCardProps {
 export default function AppCard({ app }: AppCardProps) {
   return (
     <Link href={`/app/${app.id}`} className="block">
-      <div className="app-card p-4 hover:scale-[1.02] transition-transform duration-200">
+      <div className="  hover:scale-[1.02] transition-transform duration-200">
         <div className="flex items-start space-x-3">
           <Image
             src={app.icon || "/placeholder.svg"}
@@ -29,8 +29,8 @@ export default function AppCard({ app }: AppCardProps) {
           />
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-gray-900 dark:text-white truncate">{app.title}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{app.category}</p>
-            <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-2">
+            <p className="text-sm text-blue-600 dark:text-blue-400 mb-1  rounded-full">{app.category}</p>
+            <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-1">
                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                 <span>{app.rating}</span>
@@ -41,14 +41,9 @@ export default function AppCard({ app }: AppCardProps) {
               </div>
               <span>{app.size}</span>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{app.description}</p>
           </div>
         </div>
-        <div className="mt-3 flex justify-end">
-          <button className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-full transition-colors">
-            Get
-          </button>
-        </div>
+        
       </div>
     </Link>
   )

@@ -86,7 +86,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="md:hidden fixed bg-white dark:bg-gray-900 left-0 right-0 w-full  p-4 border-t border-gray-200 dark:border-gray-700 shadow-md">
             <nav className="space-y-2">
               <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Categories</div>
               {categories.map((category) => (

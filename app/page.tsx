@@ -35,13 +35,13 @@ export default async function HomePage() {
       </div>
 
       {/* Categories */}
-      <div className="mb-8">
+      {/* <div className="mb-8">
         <CategoryChips />
-      </div>
+      </div> */}
 
       {/* Ad Banner */}
       <div className="mb-8">
-        <AdBanner className="h-32" />
+        <AdBanner  />
       </div>
 
       {/* Trending Apps */}
@@ -53,7 +53,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {trendingApps.map((app) => (
             <AppCard key={app._id.toString()} app={{
-              id: app._id.toString(),
+              id: app.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
               title: app.title,
               icon: app.icon,
               category: app.category,
@@ -75,7 +75,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {topDownloads.map((app) => (
             <AppCard key={app._id.toString()} app={{
-              id: app._id.toString(),
+              id: app.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
               title: app.title,
               icon: app.icon,
               category: app.category,
@@ -97,7 +97,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {recentApps.map((app) => (
             <AppCard key={app._id.toString()} app={{
-              id: app._id.toString(),
+              id: app.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
               title: app.title,
               icon: app.icon,
               category: app.category,
